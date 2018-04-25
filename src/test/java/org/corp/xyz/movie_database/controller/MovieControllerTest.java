@@ -32,8 +32,9 @@ public class MovieControllerTest {
 	@MockBean
 	private MovieService movieService;
 	
-	String sampleMovieJsonPrefix = "{\"id\":";
-	String sampleMovieJson = "\"name\":\"Avengers\",\"description\":\"Age of Ultron\"}";
+	String sampleMovieJsonPrefix = "{\"id\":\"";
+	String sampleMovieJson = "\",\"name\":\"Avengers\",\"description\":\"Age of Ultron\"}";
+	String generatedId = null;
 	
 	@Test
 	public void createNewMovieIfDoesnotExists() {
@@ -49,7 +50,8 @@ public class MovieControllerTest {
 			Pattern p = Pattern.compile(".*(\\d+).*");
 			Matcher m = p.matcher(response.getContentAsString().trim());
 			if (m.matches()) {
-				sampleMovieJson = sampleMovieJsonPrefix + m.group(0) + "," + sampleMovieJson;
+				generatedId = m.group(0);
+				sampleMovieJson = sampleMovieJsonPrefix + generatedId + sampleMovieJson;
 			} else {
 				fail("String doesn't match the regex pattern");
 			}
@@ -91,7 +93,7 @@ public class MovieControllerTest {
 	public void removeExistingMovie() {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders
 				.delete("/movie").accept(MediaType.TEXT_HTML)
-				.content(sampleMovieJson).contentType(MediaType.APPLICATION_JSON);
+				.param("id", generatedId).contentType(MediaType.TEXT_HTML);
 		MvcResult result;
 		try {
 			result = mockMvc.perform(requestBuilder).andReturn();

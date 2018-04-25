@@ -1,34 +1,37 @@
 package org.corp.xyz.movie_database.service;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.corp.xyz.movie_database.model.Movie;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MovieService {
 	
+	private static final String SEED_DATA_FILE_NAME = "/home/karteek/movies_list_sheet.xlsx";
+	
 	public static long nextId = 1L;
 	public static List<Movie> moviesList = new LinkedList<Movie>();
 	
 	static {
 		try {
-			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(""));
-			HSSFWorkbook wb = new HSSFWorkbook(fs);
-			HSSFSheet sheet = wb.getSheetAt(0);
-			HSSFRow row;
-			int rows = sheet.getPhysicalNumberOfRows();
-			for (int i = 0; i < rows; i++) {
-				row = sheet.getRow(i);
+			Workbook wb = new XSSFWorkbook(new FileInputStream(new File(SEED_DATA_FILE_NAME)));
+			Sheet sheet = wb.getSheetAt(0);
+			Iterator<Row> rowIterator = sheet.iterator();
+			while (rowIterator.hasNext()) {
+				Row row = rowIterator.next();
 				if (row != null) {
 					long id = Long.parseLong(row.getCell(0).toString().trim());
 					if (nextId <= id) {
@@ -38,15 +41,18 @@ public class MovieService {
 					String description = row.getCell(2).toString();
 					Movie movie = new Movie(id, name.trim(), description.trim());
 					moviesList.add(movie);
+				} else {
+					break;
 				}
-			}
+            }
+            wb.close();
+		} catch (FileNotFoundException e) {
+			System.err.println(e.getMessage());
 		} catch (IOException ioe) {
 			System.err.println(ioe.getMessage());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-		Movie movie = new Movie(234890912, "Avengers", "Age of");
-		MovieService.moviesList.add(movie);
 	}
 	
 	public Movie movieFetch(String searchPhrase) {

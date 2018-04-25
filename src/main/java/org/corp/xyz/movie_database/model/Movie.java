@@ -7,6 +7,8 @@ public class Movie {
 	private String name;
 	private String description;
 	
+	public Movie() {} // For deserialization
+	
 	public Movie(long id, String name, String description) {
 		this.id = id;
 		this.name = name;

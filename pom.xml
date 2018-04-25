@@ -14,7 +14,6 @@
 	<packaging>jar</packaging>
 
 	<name>movie-database</name>
-	<url>http://maven.apache.org</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -52,8 +51,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>3.2-FINAL</version>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.15</version>
 		</dependency>
 	</dependencies>
 	
